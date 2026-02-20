@@ -2,6 +2,8 @@
 // SCORES IDEOLOGIQUES
 // =======================
 
+var audio = new Audio('clickaudio.mp3');
+
 const ideologies = {
     marxism: 0,
     leninism: 0,
@@ -366,6 +368,7 @@ function showQuestion(){
         btn.innerText = ans.text;
         btn.onclick=()=>selectAnswer(ans.e);
         answersDiv.appendChild(btn);
+        audio.play();
     });
 
     document.getElementById("progress").innerText =
