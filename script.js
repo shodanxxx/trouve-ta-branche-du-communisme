@@ -2,8 +2,6 @@
 // SCORES IDEOLOGIQUES
 // =======================
 
-var audio = new Audio('clickaudio.mp3');
-
 const ideologies = {
     marxism: 0,
     leninism: 0,
@@ -18,13 +16,43 @@ const ideologies = {
 
 let currentQuestion = 0;
 
+// =======================
+// SCORE MAXIMUM PAR IDEOLOGIE
+// =======================
+
+const maxScores = {
+    marxism: 0,
+    leninism: 0,
+    stalinism: 0,
+    maoism: 0,
+    trotskyism: 0,
+    castrism: 0,
+    titoism: 0,
+    guevarism: 0,
+    anarchocommunism: 0
+};
+
+// =======================
+// NOMS DES IDEOLOGIES
+// =======================
+
+const ideologyNames = {
+    marxism:"Marxisme",
+    leninism:"Marxisme-Léninisme",
+    stalinism:"Stalinisme",
+    maoism:"Maoïsme",
+    trotskyism:"Trotskisme",
+    castrism:"Castrisme",
+    titoism:"Titisme",
+    guevarism:"Guevarisme",
+    anarchocommunism:"Anarcho-communisme"
+};
 
 // =======================
 // QUESTIONS (35 UNIQUES)
 // =======================
 
 const questions = [
-
 {
 q:"La révolution doit-elle être mondiale ?",
 a:[
@@ -299,6 +327,21 @@ a:[
 }
 ];
 
+// =======================
+// CALCUL DES SCORES MAXIMUM
+// =======================
+
+function computeMaxScores() {
+    questions.forEach(q => {
+        q.a.forEach(ans => {
+            for (let key in ans.e) {
+                maxScores[key] += Math.abs(ans.e[key]);
+            }
+        });
+    });
+}
+
+computeMaxScores();
 
 // =======================
 // LOGIQUE DU TEST
@@ -311,7 +354,6 @@ function startTest(){
 }
 
 function showQuestion(){
-
     const q = questions[currentQuestion];
     document.getElementById("question").innerText = q.q;
 
@@ -323,7 +365,6 @@ function showQuestion(){
         btn.className="answer";
         btn.innerText = ans.text;
         btn.onclick=()=>selectAnswer(ans.e);
-        audio.play();
         answersDiv.appendChild(btn);
     });
 
@@ -332,13 +373,10 @@ function showQuestion(){
 }
 
 function selectAnswer(effect){
-
     for (let key in effect){
         ideologies[key] += effect[key];
     }
-
     currentQuestion++;
-
     if(currentQuestion < questions.length){
         showQuestion();
     } else {
@@ -346,9 +384,8 @@ function selectAnswer(effect){
     }
 }
 
-
 // =======================
-// RESULTAT
+// AFFICHAGE DES RESULTATS
 // =======================
 
 function showResult(){
@@ -356,24 +393,38 @@ function showResult(){
     document.getElementById("quizScreen").classList.add("hidden");
     document.getElementById("resultScreen").classList.remove("hidden");
 
-    let result = Object.keys(ideologies)
-        .reduce((a,b)=> ideologies[a]>ideologies[b]?a:b);
+    const results = [];
 
-    const names = {
-        marxism:"Marxisme",
-        leninism:"Marxisme-Léninisme",
-        stalinism:"Stalinisme",
-        maoism:"Maoïsme",
-        trotskyism:"Trotskisme",
-        castrism:"Castrisme",
-        titoism:"Titisme",
-        guevarism:"Guevarisme",
-        anarchocommunism:"Anarcho-communisme"
-    };
+    for (let ideology in ideologies){
+        if(maxScores[ideology] === 0) continue;
 
-    document.getElementById("resultTitle").innerText = names[result];
+        const normalizedScore = ideologies[ideology] / maxScores[ideology];
+        results.push({
+            name: ideology,
+            percent: Math.round(normalizedScore*100)
+        });
+    }
+
+    // Trier par pourcentage décroissant
+    results.sort((a,b)=> b.percent - a.percent);
+
+    // Gagnant principal
+    if(results.length>0){
+        document.getElementById("resultTitle").innerText =
+            `Résultat principal : ${ideologyNames[results[0].name]}`;
+    }
+
     document.getElementById("resultDescription").innerText =
-        "Ce courant correspond le plus aux positions exprimées durant le test.";
+        "Classement complet des idéologies selon vos réponses :";
+
+    const resultList = document.getElementById("resultList");
+    resultList.innerHTML = "";
+
+    results.forEach(r => {
+        const li = document.createElement("li");
+        li.innerText = `${ideologyNames[r.name]} : ${r.percent}%`;
+        resultList.appendChild(li);
+    });
 }
 
 function restart(){
