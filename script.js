@@ -188,7 +188,7 @@ a:[
 {q:"Une révolution lente est-elle acceptable ?",
 a:[
 {text:"Oui, construction progressive.",e:{marxism:2}},
-{text:"Non, rupture rapide nécessaire.",e:{leninism:2,stalinism:2}},
+{text:"Non, rupture rapide nécessaire.",e:{marxismLeninism:2,stalinism:2}},
 {text:"Processus continu d’expérimentation.",e:{titoism:2}}
 ]},
 
