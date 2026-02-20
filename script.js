@@ -1,3 +1,7 @@
+// =======================
+// SCORES IDEOLOGIQUES
+// =======================
+
 const ideologies = {
     marxism: 0,
     leninism: 0,
@@ -12,95 +16,291 @@ const ideologies = {
 
 let currentQuestion = 0;
 
+
+// =======================
+// QUESTIONS (35 UNIQUES)
+// =======================
+
 const questions = [
+
 {
-q: "La révolution doit-elle être mondiale ?",
-a: [
+q:"La révolution doit-elle être mondiale ?",
+a:[
 {text:"Oui, permanente", e:{trotskyism:2}},
 {text:"Elle peut commencer dans un seul pays", e:{stalinism:2,leninism:1}},
-{text:"Chaque pays suit son propre chemin", e:{titoism:2}}
+{text:"Chaque pays suit sa propre voie", e:{titoism:2}}
 ]
 },
 {
-q:"Le parti doit-il diriger la révolution ?",
+q:"Le parti révolutionnaire doit être :",
 a:[
-{text:"Oui, un parti d'avant-garde est nécessaire", e:{leninism:2,stalinism:1}},
-{text:"Oui mais contrôlé démocratiquement", e:{marxism:2}},
-{text:"Non, auto-organisation populaire", e:{anarchocommunism:3}}
+{text:"Très centralisé", e:{stalinism:2,leninism:2}},
+{text:"Démocratique mais organisé", e:{marxism:2,trotskyism:1}},
+{text:"Inutile", e:{anarchocommunism:3}}
 ]
 },
 {
-q:"Les paysans sont-ils une force révolutionnaire majeure ?",
+q:"Qui doit diriger la révolution ?",
 a:[
-{text:"Oui, centrale", e:{maoism:3}},
-{text:"Secondaire", e:{marxism:2,leninism:1}},
-{text:"Variable selon le contexte", e:{castrism:2}}
+{text:"Le parti d'avant-garde", e:{leninism:3}},
+{text:"Les travailleurs directement", e:{anarchocommunism:3}},
+{text:"Une coalition révolutionnaire large", e:{marxism:2}}
 ]
 },
 {
-q:"Le pouvoir doit être exercé par :",
+q:"Le rôle des paysans dans la révolution :",
 a:[
-{text:"Un État révolutionnaire fort", e:{stalinism:3}},
-{text:"Des conseils ouvriers", e:{anarchocommunism:3}},
-{text:"Un parti + institutions ouvrières", e:{leninism:2}}
+{text:"Central", e:{maoism:3}},
+{text:"Important mais secondaire", e:{castrism:2,guevarism:1}},
+{text:"Faible", e:{marxism:2}}
 ]
 },
 {
-q:"La guérilla peut-elle être un moteur révolutionnaire ?",
+q:"La guérilla armée est :",
 a:[
-{text:"Oui, essentielle", e:{guevarism:3,castrism:2}},
-{text:"Parfois", e:{maoism:2}},
-{text:"Non, priorité aux travailleurs industriels", e:{marxism:2}}
+{text:"Un moteur révolutionnaire", e:{guevarism:3,castrism:2}},
+{text:"Une stratégie possible", e:{maoism:2}},
+{text:"Peu efficace", e:{marxism:2}}
 ]
 },
 {
-q:"La planification économique doit être :",
+q:"L'économie socialiste doit être :",
 a:[
-{text:"Très centralisée", e:{stalinism:3}},
-{text:"Planifiée mais flexible", e:{titoism:3}},
-{text:"Gérée localement par les travailleurs", e:{anarchocommunism:3}}
-]
-},
-{
-q:"La démocratie interne du parti doit être :",
-a:[
-{text:"Strictement encadrée", e:{stalinism:2}},
-{text:"Centralisme démocratique", e:{leninism:3}},
-{text:"Très ouverte", e:{trotskyism:2,marxism:1}}
-]
-},
-{
-q:"La révolution peut-elle venir du tiers-monde ?",
-a:[
-{text:"Oui, prioritairement", e:{maoism:2,guevarism:2,castrism:2}},
-{text:"Elle commence dans les pays industrialisés", e:{marxism:2}},
-{text:"Partout simultanément", e:{trotskyism:2}}
+{text:"Fortement planifiée", e:{stalinism:3}},
+{text:"Autogérée", e:{anarchocommunism:3,titoism:2}},
+{text:"Planifiée mais flexible", e:{marxism:2}}
 ]
 },
 {
 q:"Les syndicats doivent :",
 a:[
-{text:"Soutenir le parti", e:{leninism:2}},
+{text:"Suivre le parti", e:{leninism:2}},
 {text:"Être indépendants", e:{trotskyism:2}},
 {text:"Être autogérés", e:{anarchocommunism:3}}
 ]
 },
 {
-q:"Le socialisme peut-il coexister avec plusieurs modèles nationaux ?",
+q:"La révolution dans les pays industrialisés :",
 a:[
-{text:"Oui", e:{titoism:3}},
-{text:"Non, modèle unique", e:{stalinism:2}},
-{text:"Oui selon conditions matérielles", e:{marxism:2}}
+{text:"Prioritaire", e:{marxism:3}},
+{text:"Pas nécessaire", e:{maoism:2,guevarism:1}},
+{text:"Variable", e:{castrism:2}}
+]
+},
+{
+q:"Le socialisme peut exister dans un seul pays :",
+a:[
+{text:"Oui", e:{stalinism:3}},
+{text:"Non", e:{trotskyism:3}},
+{text:"Selon circonstances", e:{marxism:2}}
+]
+},
+{
+q:"Le rôle de l'État après la révolution :",
+a:[
+{text:"État fort", e:{stalinism:3}},
+{text:"Transition temporaire", e:{leninism:2,marxism:1}},
+{text:"Disparition rapide", e:{anarchocommunism:3}}
+]
+},
+{
+q:"La démocratie ouvrière doit être :",
+a:[
+{text:"Directe", e:{anarchocommunism:3}},
+{text:"Encadrée par le parti", e:{leninism:2}},
+{text:"Pluraliste", e:{trotskyism:2}}
+]
+},
+{
+q:"La révolution doit être exportée :",
+a:[
+{text:"Activement", e:{trotskyism:2,guevarism:2}},
+{text:"Seulement si nécessaire", e:{leninism:2}},
+{text:"Non", e:{stalinism:2}}
+]
+},
+{
+q:"L'autogestion économique :",
+a:[
+{text:"Essentielle", e:{titoism:3,anarchocommunism:2}},
+{text:"Secondaire", e:{leninism:2}},
+{text:"Dangereuse", e:{stalinism:2}}
+]
+},
+{
+q:"La discipline du parti doit être :",
+a:[
+{text:"Très stricte", e:{stalinism:3}},
+{text:"Centralisme démocratique", e:{leninism:3}},
+{text:"Souple", e:{trotskyism:2}}
+]
+},
+{
+q:"Les mouvements intellectuels sont :",
+a:[
+{text:"Importants", e:{marxism:2,trotskyism:1}},
+{text:"Secondaires", e:{stalinism:2}},
+{text:"Peu pertinents", e:{maoism:1}}
+]
+},
+{
+q:"La lutte armée rurale :",
+a:[
+{text:"Stratégie principale", e:{maoism:3}},
+{text:"Possible", e:{castrism:2}},
+{text:"Rarement utile", e:{marxism:2}}
+]
+},
+{
+q:"Le nationalisme révolutionnaire peut être :",
+a:[
+{text:"Compatible", e:{castrism:2,titoism:2}},
+{text:"Secondaire", e:{leninism:2}},
+{text:"Incompatible", e:{trotskyism:2}}
+]
+},
+{
+q:"La révolution doit être :",
+a:[
+{text:"Rapide", e:{guevarism:2}},
+{text:"Organisée progressivement", e:{leninism:2}},
+{text:"Spontanée", e:{anarchocommunism:2}}
+]
+},
+{
+q:"Le multipartisme socialiste :",
+a:[
+{text:"Acceptable", e:{trotskyism:2}},
+{text:"Dangereux", e:{stalinism:2}},
+{text:"Inutile", e:{anarchocommunism:2}}
+]
+},
+{
+q:"Les conseils ouvriers doivent :",
+a:[
+{text:"Gouverner directement", e:{anarchocommunism:3}},
+{text:"Compléter le parti", e:{leninism:2}},
+{text:"Être secondaires", e:{stalinism:2}}
+]
+},
+{
+q:"La révolution en Amérique latine :",
+a:[
+{text:"Guérilla populaire", e:{guevarism:3}},
+{text:"Processus national", e:{castrism:2}},
+{text:"Modèle universel", e:{marxism:2}}
+]
+},
+{
+q:"L'économie locale autonome :",
+a:[
+{text:"Très importante", e:{titoism:3}},
+{text:"Peu souhaitable", e:{stalinism:2}},
+{text:"Possible", e:{marxism:1}}
+]
+},
+{
+q:"La spontanéité révolutionnaire :",
+a:[
+{text:"Essentielle", e:{anarchocommunism:3}},
+{text:"Doit être guidée", e:{leninism:2}},
+{text:"Secondaire", e:{stalinism:2}}
+]
+},
+{
+q:"La révolution culturelle permanente :",
+a:[
+{text:"Nécessaire", e:{maoism:3}},
+{text:"Risque d'instabilité", e:{stalinism:1}},
+{text:"Peu utile", e:{marxism:1}}
+]
+},
+{
+q:"L'internationalisme :",
+a:[
+{text:"Priorité absolue", e:{trotskyism:3}},
+{text:"Important", e:{marxism:2}},
+{text:"Secondaire", e:{stalinism:2}}
+]
+},
+{
+q:"Le rôle du leader révolutionnaire :",
+a:[
+{text:"Central", e:{stalinism:2,maoism:2}},
+{text:"Important mais limité", e:{leninism:2}},
+{text:"Doit être évité", e:{anarchocommunism:2}}
+]
+},
+{
+q:"Les réformes avant révolution :",
+a:[
+{text:"Utiles", e:{marxism:2}},
+{text:"Tactiques seulement", e:{leninism:2}},
+{text:"Inutiles", e:{guevarism:2}}
+]
+},
+{
+q:"La révolution urbaine :",
+a:[
+{text:"Essentielle", e:{marxism:2}},
+{text:"Complémentaire", e:{maoism:2}},
+{text:"Secondaire", e:{guevarism:1}}
+]
+},
+{
+q:"La propriété collective doit être :",
+a:[
+{text:"Étatique", e:{stalinism:2}},
+{text:"Autogérée", e:{titoism:3}},
+{text:"Communale directe", e:{anarchocommunism:3}}
+]
+},
+{
+q:"Les alliances socialistes internationales :",
+a:[
+{text:"Indispensables", e:{trotskyism:2}},
+{text:"Utilitaires", e:{leninism:2}},
+{text:"Secondaires", e:{stalinism:1}}
+]
+},
+{
+q:"Une minorité organisée peut lancer la révolution :",
+a:[
+{text:"Oui", e:{leninism:2,guevarism:2}},
+{text:"Non", e:{marxism:2}},
+{text:"Seulement la masse populaire", e:{anarchocommunism:2}}
+]
+},
+{
+q:"Le modèle soviétique historique :",
+a:[
+{text:"Positif", e:{stalinism:2}},
+{text:"Partiellement", e:{leninism:2}},
+{text:"Critiquable", e:{trotskyism:2}}
+]
+},
+{
+q:"La révolution doit transformer la culture :",
+a:[
+{text:"Oui profondément", e:{maoism:2}},
+{text:"Secondaire", e:{marxism:1}},
+{text:"Non imposée", e:{anarchocommunism:2}}
+]
+},
+{
+q:"La stratégie révolutionnaire idéale :",
+a:[
+{text:"Organisation du parti", e:{leninism:2}},
+{text:"Insurrection populaire", e:{anarchocommunism:2}},
+{text:"Guérilla prolongée", e:{maoism:2,guevarism:1}}
 ]
 }
 ];
 
-// duplication automatique pour atteindre ~35 questions
-while (questions.length < 35) {
-    questions.push(JSON.parse(JSON.stringify(
-        questions[questions.length % 10]
-    )));
-}
+
+// =======================
+// LOGIQUE DU TEST
+// =======================
 
 function startTest(){
     document.getElementById("startScreen").classList.add("hidden");
@@ -109,6 +309,7 @@ function startTest(){
 }
 
 function showQuestion(){
+
     const q = questions[currentQuestion];
     document.getElementById("question").innerText = q.q;
 
@@ -128,8 +329,9 @@ function showQuestion(){
 }
 
 function selectAnswer(effect){
+
     for (let key in effect){
-        ideologies[key]+=effect[key];
+        ideologies[key] += effect[key];
     }
 
     currentQuestion++;
@@ -141,7 +343,13 @@ function selectAnswer(effect){
     }
 }
 
+
+// =======================
+// RESULTAT
+// =======================
+
 function showResult(){
+
     document.getElementById("quizScreen").classList.add("hidden");
     document.getElementById("resultScreen").classList.remove("hidden");
 
@@ -162,7 +370,7 @@ function showResult(){
 
     document.getElementById("resultTitle").innerText = names[result];
     document.getElementById("resultDescription").innerText =
-        "Ce résultat représente le courant idéologique dont tes réponses sont les plus proches.";
+        "Ce courant correspond le plus aux positions exprimées durant le test.";
 }
 
 function restart(){
