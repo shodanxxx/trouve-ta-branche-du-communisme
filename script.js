@@ -2,7 +2,8 @@
 // SCORES IDEOLOGIQUES
 // =======================
 
-var audio = new Audio('clickaudio.mp3');
+// Lazy audio - create on first interaction to avoid preloading
+var audio = null;
 
 const ideologies = {
     marxism: 0,
@@ -17,6 +18,8 @@ const ideologies = {
 };
 
 let currentQuestion = 0;
+// Historique des réponses pour pouvoir revenir en arrière
+let answerHistory = [];
 
 // =======================
 // SCORE MAXIMUM PAR IDEOLOGIE
@@ -368,7 +371,6 @@ function showQuestion(){
         btn.innerText = ans.text;
         btn.onclick=()=>selectAnswer(ans.e);
         answersDiv.appendChild(btn);
-        audio.play();
     });
 
 // Bouton "Je ne sais pas"
@@ -378,11 +380,41 @@ function showQuestion(){
     skipBtn.onclick = () => selectAnswer({});
     answersDiv.appendChild(skipBtn);
 
+    // Bouton "Retour" pour revenir à la question précédente
+    const backBtn = document.createElement("button");
+    backBtn.className = "answer back-btn";
+    backBtn.innerText = "Retourner à la dernière question";
+    backBtn.onclick = () => {
+        if (currentQuestion === 0) return;
+        // Revenir d'abord en arrière dans l'index des questions
+        currentQuestion--;
+        // Annuler le dernier effet enregistré
+        const lastEffect = answerHistory.pop() || {};
+        for (let key in lastEffect){
+            ideologies[key] -= lastEffect[key];
+        }
+        showQuestion();
+    };
+    // Désactivé si c'est la première question
+    backBtn.disabled = (currentQuestion === 0);
+    answersDiv.appendChild(backBtn);
+
     document.getElementById("progress").innerText =
         `Question ${currentQuestion+1} / ${questions.length}`;
 }
 
 function selectAnswer(effect){
+    // play click audio on selection (create lazily to avoid preload)
+    try{
+        if(!audio){
+            audio = new Audio('clickaudio.mp3');
+            audio.preload = 'none';
+        }
+        audio.currentTime = 0;
+        audio.play();
+    }catch(e){}
+    // Sauvegarde de l'effet choisi pour pouvoir annuler si nécessaire
+    answerHistory.push(effect);
     for (let key in effect){
         ideologies[key] += effect[key];
     }
@@ -430,17 +462,144 @@ function showResult(){
     const resultList = document.getElementById("resultList");
     resultList.innerHTML = "";
 
-    results.forEach(r => {
+    // Illustration for the top ideology
+    const resultImage = document.getElementById('resultImage');
+    resultImage.innerHTML = '';
+
+    results.forEach((r, idx) => {
         const li = document.createElement("li");
-        li.innerText = `${ideologyNames[r.name]} : ${r.percent}%`;
-        li.style.setProperty('--percent', r.percent + '%');
-        li.style.width = '100%'; // largeur totale du li
-        li.style.position = 'relative';
-        li.style.overflow = 'hidden';
-        li.style.background = `linear-gradient(to right, #ff3333 ${r.percent}%, #ecf0f1 ${r.percent}%)`;
+        li.className = 'result-item';
+        li.setAttribute('role','listitem');
+        // start the CSS progress at 0% then animate to target for smooth effect
+        li.style.setProperty('--percent', '0%');
+        // start hidden for staggered appear
+        li.style.opacity = '0';
+        li.style.transform = 'translateY(8px)';
+
+        const nameSpan = document.createElement('span');
+        nameSpan.className = 'result-name';
+        nameSpan.innerText = ideologyNames[r.name];
+
+        const percentSpan = document.createElement('span');
+        percentSpan.className = 'result-percent';
+        percentSpan.innerText = '0%';
+
+        li.appendChild(nameSpan);
+        li.appendChild(percentSpan);
+
         resultList.appendChild(li);
+
+        // staggered animation
+        const delay = 120 * idx;
+        setTimeout(() => {
+            // animate CSS progress fill
+            li.style.setProperty('--percent', r.percent + '%');
+            // fade/slide in
+            li.style.transition = 'opacity 420ms ease, transform 420ms cubic-bezier(.2,.9,.2,1)';
+            li.style.opacity = '1';
+            li.style.transform = 'translateY(0)';
+            // animate the numeric percent counter
+            animateCount(percentSpan, r.percent, 700);
+        }, delay);
     });
+
+    // render an illustrative image for the top ideology (first in results)
+    if(results.length>0){
+        const top = results[0];
+        resultImage.innerHTML = '';
+        const label = ideologyNames[top.name];
+        if(imagesMap[top.name]){
+            const img = document.createElement('img');
+            img.src = imagesMap[top.name];
+            img.alt = label;
+            img.className = 'result-figure';
+            // performance attributes to avoid layout shift and heavy blocking
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            img.width = 220;
+            img.height = 120;
+            img.setAttribute('fetchpriority','low');
+            img.style.objectFit = 'cover';
+            resultImage.appendChild(img);
+            // no caption — image only
+        } else {
+            resultImage.innerHTML = getIdeologySVG(top.name, label, top.percent);
+        }
+        resultImage.setAttribute('aria-hidden', 'false');
+    }
 }
+
+// Animate a numeric counter inside an element from 0 to target (integer percent)
+function animateCount(el, target, duration){
+    const start = performance.now();
+    const from = 0;
+    const to = Math.max(0, Math.round(target));
+    function step(now){
+        const elapsed = now - start;
+        const t = Math.min(1, elapsed / duration);
+        // easeOutCubic
+        const ease = 1 - Math.pow(1 - t, 3);
+        const value = Math.floor(from + (to - from) * ease);
+        el.innerText = value + '%';
+        if(t < 1) requestAnimationFrame(step);
+        else el.innerText = to + '%';
+    }
+    requestAnimationFrame(step);
+}
+
+// Return an inline SVG string illustrating an ideology name
+function getIdeologySVG(key, label, percent){
+        // color palette per ideology (pleasant neutrals + accent)
+        const palette = {
+                marxism:'#ff6b6b',
+                leninism:'#ff8a65',
+                stalinism:'#ff5252',
+                maoism:'#ff7043',
+                trotskyism:'#4dd0e1',
+                castrism:'#ffd54f',
+                titoism:'#81c784',
+                guevarism:'#ef5350',
+                anarchocommunism:'#9fa8da'
+        };
+        const c = palette[key] || '#ffffff';
+
+        // A compact abstract SVG: a circle + ribbon + percent text
+        const svg = `
+        <div>
+            <svg viewBox="0 0 400 200" xmlns="http://www.w3.org/2000/svg" aria-label="Illustration ${label}">
+                <defs>
+                    <linearGradient id="g1" x1="0" x2="1">
+                        <stop offset="0%" stop-color="${c}" stop-opacity="0.95"/>
+                        <stop offset="100%" stop-color="#ffffff" stop-opacity="0.18"/>
+                    </linearGradient>
+                </defs>
+                <rect x="8" y="8" width="384" height="184" rx="14" fill="rgba(255,255,255,0.02)" />
+                <circle cx="96" cy="100" r="54" fill="url(#g1)" />
+                <g transform="translate(200,50)">
+                    <rect x="0" y="0" width="180" height="16" rx="8" fill="rgba(255,255,255,0.04)" />
+                    <rect x="0" y="28" width="180" height="16" rx="8" fill="rgba(255,255,255,0.04)" />
+                    <rect x="0" y="56" width="180" height="16" rx="8" fill="rgba(255,255,255,0.04)" />
+                    <rect x="0" y="84" width="180" height="16" rx="8" fill="rgba(255,255,255,0.04)" />
+                </g>
+                <text x="96" y="105" font-family="Inter, Arial, sans-serif" font-size="28" font-weight="700" text-anchor="middle" fill="#0b1220">${percent}%</text>
+            </svg>
+            </div>
+        `;
+        return svg;
+}
+
+    // Map of local illustrative images (fall back to SVG if not present)
+    const imagesMap = {
+        marxism: 'images/marxism.png',
+        leninism: 'images/leninism.png',
+        stalinism: 'images/stalinism.png',
+        maoism: 'images/maoism.png',
+        trotskyism: 'images/trotskyism.png',
+        titoism: 'images/titoism.png',
+        guevarism: 'images/guevarism.png',
+        castrism: 'images/castro.jpg',
+        anarchocommunism: 'images/anarcho.png'
+    };
 
 function restart(){
     location.reload();
