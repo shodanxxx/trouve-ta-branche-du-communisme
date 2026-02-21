@@ -371,6 +371,13 @@ function showQuestion(){
         audio.play();
     });
 
+// Bouton "Je ne sais pas"
+    const skipBtn = document.createElement("button");
+    skipBtn.className = "answer skip-btn";
+    skipBtn.innerText = "Je ne sais pas / Neutre";
+    skipBtn.onclick = () => selectAnswer({});
+    answersDiv.appendChild(skipBtn);
+
     document.getElementById("progress").innerText =
         `Question ${currentQuestion+1} / ${questions.length}`;
 }
